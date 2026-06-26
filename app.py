@@ -1,29 +1,33 @@
 from flask import Flask
+import os
 import requests
 
 app = Flask(__name__)
 
-import os
+# Get API key from Render environment variables
 API_KEY = os.getenv("API_KEY")
-
-def get_price():
-    url = f"https://api.polygon.io/v2/last/trade/SMMT?apiKey={API_KEY}"
-    r = requests.get(url).json()
-    return str(r)
-
-    try:
-        return r["results"]["p"]
-    except:
-        return "N/A"
 
 @app.route("/")
 def home():
-    price = get_price()
 
+    # If API key is missing, show error clearly
+    if not API_KEY:
+        return "<h1>ERROR</h1><p>Missing API_KEY in Render environment variables</p>"
+
+    url = "https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/SMMT"
+    params = {"apiKey": API_KEY}
+
+    try:
+        r = requests.get(url, params=params, timeout=10)
+        data = r.json()
+    except Exception as e:
+        return f"<h1>REQUEST ERROR</h1><pre>{str(e)}</pre>"
+
+    # Show FULL response first (no guessing, no parsing errors)
     return f"""
-    <h1>SMMT SENTINEL v2</h1>
-    <p>Live Price: {price}</p>
-    <p>Status: LIVE</p>
+    <h1>SMMT SENTINEL</h1>
+    <h2>RAW DATA (debug mode)</h2>
+    <pre>{data}</pre>
     """
 
 if __name__ == "__main__":
