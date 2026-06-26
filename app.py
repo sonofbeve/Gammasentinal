@@ -9,6 +9,7 @@ API_KEY = os.getenv("API_KEY")
 def get_price():
     url = f"https://api.polygon.io/v2/last/trade/SMMT?apiKey={API_KEY}"
     r = requests.get(url).json()
+    return str(r)
 
     try:
         return r["results"]["p"]
