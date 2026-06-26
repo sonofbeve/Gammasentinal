@@ -3,7 +3,8 @@ import requests
 
 app = Flask(__name__)
 
-API_KEY = "PUT_YOUR_POLYGON_KEY_HERE"
+import os
+API_KEY = os.getenv("API_KEY")
 
 def get_price():
     url = f"https://api.polygon.io/v2/last/trade/SMMT?apiKey={API_KEY}"
