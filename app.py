@@ -9,14 +9,34 @@ def home():
     ticker = yf.Ticker("SMMT")
 
     try:
-        price = ticker.fast_info["lastPrice"]
-    except:
+        info = ticker.fast_info
+
+        price = info.get("lastPrice", "Unavailable")
+        previous = info.get("previousClose")
+
+        if isinstance(price, (int, float)) and isinstance(previous, (int, float)):
+            change = price - previous
+            percent = (change / previous) * 100
+        else:
+            change = "N/A"
+            percent = "N/A"
+
+    except Exception:
         price = "Unavailable"
+        change = "N/A"
+        percent = "N/A"
 
     return f"""
     <h1>Gamma Sentinel</h1>
-    <p><strong>Ticker:</strong> SMMT</p>
+
+    <h2>SMMT</h2>
+
     <p><strong>Live Price:</strong> {price}</p>
+    <p><strong>Today's Change:</strong> {change}</p>
+    <p><strong>Percent Change:</strong> {percent}</p>
+
+    <hr>
+
     <p>Status: LIVE</p>
     """
 
