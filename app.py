@@ -1,33 +1,23 @@
 from flask import Flask
-import os
-import requests
+import yfinance as yf
 
 app = Flask(__name__)
-
-# Get API key from Render environment variables
-API_KEY = os.getenv("API_KEY")
 
 @app.route("/")
 def home():
 
-    # If API key is missing, show error clearly
-    if not API_KEY:
-        return "<h1>ERROR</h1><p>Missing API_KEY in Render environment variables</p>"
-
-    url = "https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/SMMT"
-    params = {"apiKey": API_KEY}
+    ticker = yf.Ticker("SMMT")
 
     try:
-        r = requests.get(url, params=params, timeout=10)
-        data = r.json()
-    except Exception as e:
-        return f"<h1>REQUEST ERROR</h1><pre>{str(e)}</pre>"
+        price = ticker.fast_info["lastPrice"]
+    except:
+        price = "Unavailable"
 
-    # Show FULL response first (no guessing, no parsing errors)
     return f"""
-    <h1>SMMT SENTINEL</h1>
-    <h2>RAW DATA (debug mode)</h2>
-    <pre>{data}</pre>
+    <h1>Gamma Sentinel</h1>
+    <p><strong>Ticker:</strong> SMMT</p>
+    <p><strong>Live Price:</strong> {price}</p>
+    <p>Status: LIVE</p>
     """
 
 if __name__ == "__main__":
